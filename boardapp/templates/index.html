@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load static from staticfiles %}
+
+{% block meta_title %} - LogIn from facebook{% endblock meta_title %}
+
+{% block content %}
+<h3>Please, log in
+    {% url 'board' as board_url  %}
+    <a href="{% url 'social:begin' 'facebook' %}?next={{ board_url }}">via facebook!</a>
+</h3>
+{% endblock content %}

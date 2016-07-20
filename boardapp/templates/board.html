@@ -4,5 +4,21 @@
 {% block meta_title %} - Board for messages{% endblock meta_title %}
 
 {% block content %}
-<h3>User's messages!</h3>
+<ul>
+
+{% for message in user_messages %}
+    <li>{{ message.content }}
+        {% if message.has_comment %}
+        <button type="button" class="btn btn-default btn-xs" data-message-id="{{ message.id }}">
+            Open the comments
+        </button>
+        {% endif %}
+        <button type="button" class="btn btn-default btn-xs" data-message-id="{{ message.id }}">
+            Make comment
+        </button>
+    </li>
+{% endfor %}
+</ul>
+
+
 {% endblock content %}

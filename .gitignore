@@ -3,3 +3,4 @@
 *.egg-info
 *.mo
 *.egg
+django-mptt-0.8.4

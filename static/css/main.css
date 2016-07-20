@@ -5,3 +5,14 @@
 #header {
     padding: 10px;
 }
+
+#buttons-ch {
+    margin: 150px auto;
+}
+
+#wout-auth {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    height: 40px;
+    font-size: 16px;
+}

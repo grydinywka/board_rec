@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load static from staticfiles %}
+{% load mptt_tags %}
+
+{% block meta_title %} - Try mptt{% endblock meta_title %}
+
+{% block content %}
+<ul>
+    {% recursetree nodes %}
+        <li>
+            {{ node.name }}
+            {% if not node.is_leaf_node %}
+                <ul class="children">
+                    {{ children }}
+                </ul>
+            {% endif %}
+        </li>
+    {% endrecursetree %}
+</ul>
+
+{% endblock %}

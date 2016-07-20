@@ -19,11 +19,12 @@ from django.views.generic.base import TemplateView
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import RedirectView
 from user_auth.views import custom_login #, reset_pwd
-from boardapp.views import IndexView
+from boardapp.views import IndexView, MessageList, show_genres
 
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name='index'),
-    url(r'^board/$', TemplateView.as_view(template_name='board.html'), name='board'),
+    url(r'^board/$', MessageList.as_view(), name='board'),
+    url(r'^genres/$', show_genres, name='genres'),
 
     # User Related urls
     url(r'^users/logout/$', auth_views.logout, kwargs={'next_page': 'index'}, name='auth_logout'),

@@ -4,8 +4,22 @@
 {% block meta_title %} - LogIn from facebook{% endblock meta_title %}
 
 {% block content %}
-<h3>Please, log in
+<div class="text-center" id="buttons-ch">
     {% url 'board' as board_url  %}
-    <a href="{% url 'social:begin' 'facebook' %}?next={{ board_url }}">via facebook!</a>
-</h3>
+
+    <a href="{% url 'social:begin' 'facebook' %}?next={{ board_url }}">
+        <img src="{% static 'img/facebook3.png' %}" >
+    </a>
+    <div id="wout-auth">
+        or
+    </div>
+
+
+    <a href="{% url 'board' %}">
+        <button type="button" class="btn btn-default btn-lg">
+        Enter without authenticating
+        </button>
+    </a>
+
+</div>
 {% endblock content %}

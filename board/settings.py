@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'social.apps.django_app.default',
     'boardapp',
     'user_auth',
+    'mptt',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -119,7 +120,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Kiev'
 
 USE_I18N = True
 

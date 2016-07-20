@@ -1,4 +1,12 @@
 Django==1.9.8
-psycopg2==2.6.2
+django-mptt==0.8.4
 django-registration-redux==1.4
+oauthlib==1.1.2
+psycopg2==2.6.2
+PyJWT==1.4.1
+python-openid==2.2.5
 python-social-auth==0.2.19
+pytz==2016.6.1
+requests==2.10.0
+requests-oauthlib==0.6.2
+six==1.10.0

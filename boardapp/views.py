@@ -33,7 +33,7 @@ def show_genres(request):
     return render(request, "genres.html", {'nodes': Genre.objects.all()})
 
 def show_notices(request):
-    return render(request, "genres.html", {'nodes': Notice.objects.all()})
+    return render(request, "genres.html", {'nodes': CmtNotice.objects.all(), 'notices': Notice.objects.all()})
 
 class NoticeList(ListView):
     model = Notice

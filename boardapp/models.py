@@ -25,8 +25,17 @@ class Message(models.Model):
         verbose_name = "Message"
         verbose_name_plural = "Messages"
 
-from django.db import models
+
 from mptt.models import MPTTModel, TreeForeignKey
+
+# class BaseNotice(MPTTModel):
+#     content = models.CharField(max_length=254, blank=False, null=True, default=None)
+#     created = models.DateTimeField(auto_now_add=True, auto_now=False)
+#     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+#
+#     def __unicode__(self):
+#         return u"Notice #%s, time posting: %s" % (self.id, self.created)
+
 
 class Genre(MPTTModel):
     name = models.CharField(max_length=50, unique=True, null=True, default=None)
@@ -39,3 +48,30 @@ class Genre(MPTTModel):
 
     class MPTTMeta:
         order_insertion_by = ['name']
+
+
+class Notice(MPTTModel):
+
+    # def save(self, *args, **kwargs):
+    #     if self.parent is not None:
+    #         try:
+    #             self.insert_at(self.parent, position='last-child', save=False)
+    #         except ValueError:
+    #             self.move_to(self.parent, position='last-child')
+    #     super(Notice, self).save(*args, **kwargs)
+
+    content = models.CharField(max_length=254, blank=False, null=True, default=None)
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True, default=None)
+    created = models.DateTimeField(auto_now_add=True, auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    def __unicode__(self):
+        return u"Notice #%s, time posting: %s" % (self.id, self.created)
+
+    class MPTTMeta:
+        order_insertion_by = ['-created']
+
+class CmtNotice(Notice):
+
+    class MPTTMeta:
+        order_insertion_by = ['created']

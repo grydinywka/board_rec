@@ -6,6 +6,10 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit, Layout, Field,Div
+from crispy_forms.bootstrap import FormActions, PrependedText
+
 from .models import Message, Genre, Notice
 
 
@@ -40,16 +44,43 @@ class NoticeForm(forms.ModelForm):
         model = Notice
         fields = ['content']
 
+    def __init__(self, *args, **kwargs):
+        super(NoticeForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+
+        # set form tag attributes
+        self.helper.form_action = reverse('board')
+        self.helper.form_method = 'POST'
+        self.helper.form_class = 'form-horizontal'
+
+        # set form field properties
+        self.helper.help_text_inline = True
+        self.helper.html5_required = False
+        # self.helper.label_class = 'col-sm-2 control-label'
+        self.helper.field_class = 'col-sm-12'
+
+
+        # button
+        self.helper.layout[-1] = FormActions(
+            Submit('add_button', u'add message', css_class="btn btn-primary "),
+
+            )
+
+        super(NoticeForm, self).__init__(*args, **kwargs)
+
     content =forms.CharField(
-        widget=forms.Textarea(attrs={'placeholder': "Write your message here!",
-                                     'cols': 100,})
+        widget=forms.Textarea(attrs={'placeholder': "Write your message here!",}),
+        label=False
     )
+
+    no_field = forms.CharField(required=False)
 
 def show_notices(request):
     if request.method == 'POST':
         form = NoticeForm(request.POST)
 
-        if request.POST.get('add_message'):
+        if request.POST.get('add_button'):
             data = {}
 
             if form.is_valid():

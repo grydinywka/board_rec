@@ -1,4 +1,5 @@
 Django==1.9.8
+django-crispy-forms==1.6.0
 django-mptt==0.8.4
 django-registration-redux==1.4
 oauthlib==1.1.2

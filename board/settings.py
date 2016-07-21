@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'boardapp',
     'user_auth',
     'mptt',
+    'crispy_forms',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -70,7 +71,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                "django.core.context_processors.request",
                 "social.apps.django_app.context_processors.backends",
                 "social.apps.django_app.context_processors.login_redirect",
             ],
@@ -153,4 +153,4 @@ SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
     'fields': 'id,name,email',
 }
 
-DATE_FORMAT = "Y-m-d"
+CRISPY_TEMPLATE_PACK = 'bootstrap3'

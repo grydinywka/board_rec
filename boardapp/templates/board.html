@@ -1,19 +1,13 @@
 {% extends "base.html" %}
 {% load static from staticfiles %}
 {% load mptt_tags %}
+{% load crispy_forms_tags %}
 
 {% block meta_title %} - Board for messages{% endblock meta_title %}
 
 {% block content %}
 
-<div id="new-message">
-    <form action="{% url 'board' %}" method="post" enctype="multipart/form-data" role="form" class="form-horizontal">
-        {% csrf_token %}
-        {{ form.content }}
-
-        <input type="submit" value="Add new message" name="add_message" class="btn btn-primary">
-    </form>
-</div>
+{% crispy form %}
 
 <ul>
     {% recursetree notices %}
@@ -27,6 +21,5 @@
         </li>
     {% endrecursetree %}
 </ul>
-
 
 {% endblock content %}

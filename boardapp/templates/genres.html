@@ -5,29 +5,9 @@
 {% block meta_title %} - Try mptt{% endblock meta_title %}
 
 {% block content %}
-{% for notice in notices %}
-{% with nos=notice.cmtnotice_set.all %}
-<ul>
-    {{ notice }}
-    <ul>
-    {% recursetree nos %}
-        <li>
-            {{ node.id }}
-            {% if not node.is_leaf_node %}
-                <ul class="children">
-                    {{ children }}
-                </ul>
-            {% endif %}
-        </li>
-    {% endrecursetree %}
-    </ul>
-</ul>
-{% endwith %}
-{% endfor %}
-<p>------------------------</p>
 
 <ul>
-    {% recursetree nodes %}
+    {% recursetree notices %}
         <li>
             {{ node.id }}
             {% if not node.is_leaf_node %}

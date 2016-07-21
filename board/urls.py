@@ -23,8 +23,8 @@ from boardapp.views import IndexView, MessageList, show_genres, show_notices, No
 
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name='index'),
-    url(r'^board/$', MessageList.as_view(), name='board'),
-    url(r'^genres/$', show_notices, name='genres'),
+    url(r'^board/$', show_notices, name='board'),
+    url(r'^genres/$', NoticeList.as_view(), name='genres'),
 
     # User Related urls
     url(r'^users/logout/$', auth_views.logout, kwargs={'next_page': 'index'}, name='auth_logout'),

@@ -44,7 +44,7 @@ class Genre(MPTTModel):
 
 class BaseNotice(MPTTModel):
     """Base class for Messages and Comments"""
-    content = models.CharField(max_length=254, blank=False, null=True, default=None)
+    content = models.TextField(blank=False, null=True, default=None)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True, default=None)
@@ -55,29 +55,17 @@ class BaseNotice(MPTTModel):
 
 class Notice(BaseNotice):
     """class for root messages (in top of tree)"""
-    # def save(self, *args, **kwargs):
-    #     if self.parent is not None:
-    #         try:
-    #             self.insert_at(self.parent, position='last-child', save=False)
-    #         except ValueError:
-    #             self.move_to(self.parent, position='last-child')
-    #     super(Notice, self).save(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        if self.parent is not None:
+            try:
+                self.insert_at(self.parent, position='last-child', save=False)
+            except ValueError:
+                self.move_to(self.parent, position='last-child')
+        super(Notice, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return u"Notice #%s, time posting: %s" % (self.id, self.created)
 
     class MPTTMeta:
         order_insertion_by = ['-created']
-
-class CmtNotice(BaseNotice):
-    """ class for comments and for comments to comments """
-    notice = models.ForeignKey("Notice", blank=True, null=True, default=None)
-    def __unicode__(self):
-        return u"CommentNotice #%s, time posting: %s" % (self.id, self.created)
-
-    class MPTTMeta:
-        order_insertion_by = ['created']
-
-    class Meta(object):
-        verbose_name = u"CommentNotice"
-        verbose_name_plural = u"CommentNotices"

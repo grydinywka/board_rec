@@ -1,23 +1,31 @@
 {% extends "base.html" %}
 {% load static from staticfiles %}
+{% load mptt_tags %}
 
 {% block meta_title %} - Board for messages{% endblock meta_title %}
 
 {% block content %}
-<ul>
 
-{% for message in user_messages %}
-    <li>{{ message.content }}
-        {% if message.has_comment %}
-        <button type="button" class="btn btn-default btn-xs" data-message-id="{{ message.id }}">
-            Open the comments
-        </button>
-        {% endif %}
-        <button type="button" class="btn btn-default btn-xs" data-message-id="{{ message.id }}">
-            Make comment
-        </button>
-    </li>
-{% endfor %}
+<div id="new-message">
+    <form action="{% url 'board' %}" method="post" enctype="multipart/form-data" role="form" class="form-horizontal">
+        {% csrf_token %}
+        {{ form.content }}
+
+        <input type="submit" value="Add new message" name="add_message" class="btn btn-primary">
+    </form>
+</div>
+
+<ul>
+    {% recursetree notices %}
+        <li>
+            {{ node.created|date:"Y-M-d H:i:s" }} {{ node.content }}
+            {% if not node.is_leaf_node %}
+                <ul class="children">
+                    {{ children }}
+                </ul>
+            {% endif %}
+        </li>
+    {% endrecursetree %}
 </ul>
 
 

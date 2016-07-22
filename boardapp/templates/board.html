@@ -7,41 +7,45 @@
 
 {% block content %}
 
+<div class="text-center" id="sub-header">
 {% if user.is_authenticated %}
     {% crispy form %}
 {% else %}
-    <div class="text-center" id="sub-header">
-        {% url 'board' as board_url  %}
-        <span class="lead">For adding messages or comments, please: </span>
-        <a href="{% url 'social:begin' 'facebook' %}?next={{ board_url }}">
-            <img src="{% static 'img/facebook2.png' %}" >
-        </a>
-    </div>
-{% endif %}
 
-<ul  class="list-group">
+        {% url 'board' as board_url  %}
+        <span class="lead">For adding messages or comments, please:
+            <a href="{% url 'index' %}">
+                Log In!
+            </a>
+        </span>
+
+{% endif %}
+</div>
+
+<ul class="list-group">
     {% recursetree notices %}
-        <li class="list-group-item">
+        <li class="list-group-item lead">
             <span>({{ node.created|date:"Y-M-d H:i:s" }}) {{ node.user }}:</span>
             <p class="content">{{ node.content }}</p>
+            <div class="content-correct">
+                {% crispy form_correct %}
+            </div>
 
-                {% if user.is_authenticated %}
-                    <div>
-                        <button type="button" class="addcomment btn btn-warning btn-xs"
-                                data-comment-id="{{ node.id }}">Add
-                            comment</button>
-                        {% if user == node.user %}/
-                        <a href="#">Correct</a>
-                        {% endif %}
-                        <div class="comment" id="comment_to{{ node.id }}">
-                            <!--<input type="text" value="'{{ node.id }}'" class="input-comment" placeholder="Write your-->
-                            <!--comment here!" name="input-comment">-->
-                            <!--<input type="submit" >-->
-                            {% crispy form_comment %}
-                        </div>
-
+            {% if user.is_authenticated %}
+                <div>
+                    <button type="button" class="addcomment btn btn-warning btn-xs"
+                            data-comment-id="{{ node.id }}">Add
+                        comment</button>
+                    {% if user == node.user %}/
+                    <button type="button" class="correct_msg btn btn-link" href="#">Correct</button>
+                        <!--{% if node.updated == node.created %}Updated {{ node.updated|date:"Y-M-d H:i:s" }}{% endif %}-->
+                    {% endif %}
+                    <div class="comment" id="comment_to{{ node.id }}">
+                        {% crispy form_comment %}
                     </div>
-                {% endif %}
+
+                </div>
+            {% endif %}
             <br>
 
 
@@ -49,6 +53,7 @@
 
             {% if not node.is_leaf_node %}
             <ul class="children">
+                <p>Comments:</p>
                     {{ children }}
             </ul>
             {% endif %}

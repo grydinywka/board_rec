@@ -18,7 +18,7 @@
 }
 
 #submit-id-add_comment {
-    margin-left: 10px;
+    /* margin-left: 10px; */
 }
 
 .content {
@@ -26,9 +26,26 @@
 }
 
 #sub-header {
-    margin: 20px;
+    margin: 40px auto;
 }
 
 #header {
     margin-bottom: 20px;
+}
+
+#id_content {
+    font-size: 20px;
+}
+
+#id_content_comment, #submit-id-add_comment, #id_content_correct {
+    font-size: 20px;
+
+}
+
+#submit-id-add_comment {
+    padding: 11px;
+}
+
+.content-correct {
+    margin-bottom: 50px
 }

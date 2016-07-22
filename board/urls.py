@@ -19,7 +19,7 @@ from django.views.generic.base import TemplateView
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import RedirectView
 from user_auth.views import custom_login #, reset_pwd
-from boardapp.views import IndexView, MessageList, show_genres, show_notices, NoticeList
+from boardapp.views import IndexView, show_notices, NoticeList
 
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name='index'),

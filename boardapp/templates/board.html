@@ -7,12 +7,30 @@
 
 {% block content %}
 
-{% crispy form %}
+{% if user.is_authenticated %}
+    {% crispy form %}
+{% else %}
+    <div class="text-center">
+        {% url 'board' as board_url  %}
+        <span class="lead">For adding messages or comments, please: </span>
+        <a href="{% url 'social:begin' 'facebook' %}?next={{ board_url }}">
+            <img src="{% static 'img/facebook2.png' %}" >
+        </a>
+    </div>
+{% endif %}
 
 <ul>
     {% recursetree notices %}
         <li>
-            {{ node.created|date:"Y-M-d H:i:s" }} {{ node.content }}
+            ({{ node.created|date:"Y-M-d H:i:s" }}) {{ node.content }}
+
+            {% if user.is_authenticated %}
+                <div class="comment">
+                    <a href="#">Add comment</a>
+                    <a href="#">Correct</a>
+                </div>
+            {% endif %}
+
             {% if not node.is_leaf_node %}
                 <ul class="children">
                     {{ children }}

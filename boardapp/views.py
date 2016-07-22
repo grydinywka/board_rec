@@ -70,7 +70,8 @@ class NoticeForm(forms.ModelForm):
         super(NoticeForm, self).__init__(*args, **kwargs)
 
     content =forms.CharField(
-        widget=forms.Textarea(attrs={'placeholder': "Write your message here!",}),
+        widget=forms.Textarea(attrs={'placeholder': "Write your message here!",
+                                     'rows': 3}),
         label=False
     )
 
@@ -84,10 +85,9 @@ def show_notices(request):
             data = {}
 
             if form.is_valid():
-                data['content'] = form.cleaned_data['content']
-                # data['']
                 try:
-                    notice = Notice(**data)
+                    notice = form.save(commit=False)
+                    notice.user = request.user
                     notice.save()
                 except Exception as e:
                     messages.error(request, 'Error during adding message!' + str(e))

@@ -56,6 +56,7 @@ class BaseNotice(MPTTModel):
 class Notice(BaseNotice):
     """class for root messages (in top of tree)"""
 
+    user = models.ForeignKey('auth.User', null=True, blank=False, default=None)
     def save(self, *args, **kwargs):
         if self.parent is not None:
             try:

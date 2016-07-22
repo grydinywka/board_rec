@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^genres/$', NoticeList.as_view(), name='genres'),
 
     # User Related urls
-    url(r'^users/logout/$', auth_views.logout, kwargs={'next_page': 'index'}, name='auth_logout'),
+    url(r'^users/logout/$', auth_views.logout, kwargs={'next_page': 'board'}, name='auth_logout'),
     url(r'^users/login/$', custom_login, name='auth_login'),
 
     url(r'^register/complete/$', RedirectView.as_view(pattern_name='board'), name='registration_complete'),

@@ -4,3 +4,4 @@
 *.mo
 *.egg
 django-mptt-0.8.4
+crispy_ex.txt

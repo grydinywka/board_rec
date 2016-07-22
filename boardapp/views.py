@@ -7,8 +7,8 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Field,Div
-from crispy_forms.bootstrap import FormActions, PrependedText
+from crispy_forms.layout import Submit, Layout, Field, Div, Fieldset, HTML, ButtonHolder, MultiField, Hidden
+from crispy_forms.bootstrap import FormActions, PrependedText, AppendedText, FieldWithButtons, StrictButton
 
 from .models import Message, Genre, Notice
 
@@ -38,14 +38,15 @@ class MessageList(ListView):
 def show_genres(request):
     return render(request, "genres.html", {'nodes': Genre.objects.all()})
 
-class NoticeForm(forms.ModelForm):
-    """form for add/edit form"""
+
+class BaseNoticeForm(forms.ModelForm):
+    """base class for add/edit form"""
     class Meta:
         model = Notice
         fields = ['content']
 
     def __init__(self, *args, **kwargs):
-        super(NoticeForm, self).__init__(*args, **kwargs)
+        super(BaseNoticeForm, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper(self)
 
@@ -56,18 +57,24 @@ class NoticeForm(forms.ModelForm):
 
         # set form field properties
         self.helper.help_text_inline = True
-        self.helper.html5_required = False
-        # self.helper.label_class = 'col-sm-2 control-label'
-        self.helper.field_class = 'col-sm-12'
+        self.helper.html5_required = True
 
 
-        # button
-        self.helper.layout[-1] = FormActions(
-            Submit('add_button', u'add message', css_class="btn btn-primary "),
+class NoticeForm(BaseNoticeForm):
+    """for add/edit message"""
 
-            )
-
+    def __init__(self, *args, **kwargs):
         super(NoticeForm, self).__init__(*args, **kwargs)
+
+        self.helper.layout = Layout(
+            'content',
+            FormActions(
+                Submit('add_button', u'add message', css_class="btn btn-primary "),
+            ),
+        )
+
+        # set form field properties
+        self.helper.field_class = 'col-sm-12'
 
     content =forms.CharField(
         widget=forms.Textarea(attrs={'placeholder': "Write your message here!",
@@ -75,14 +82,39 @@ class NoticeForm(forms.ModelForm):
         label=False
     )
 
-    no_field = forms.CharField(required=False)
+class CommentForm(BaseNoticeForm):
+    """ form for comment messages """
+
+    def __init__(self, *args, **kwargs):
+        super(CommentForm, self).__init__(*args, **kwargs)
+
+        self.helper.layout = Layout(
+            Div(HTML("""
+                    <input type="hidden" value="{{ node.id }}" name="id-node">
+                """)),
+            FieldWithButtons('content', Submit('add_comment', u'Submit', css_class="btn btn-info ")),
+
+        )
+
+        # set form field properties
+        self.helper.field_class = 'col-sm-8'
+
+    content = forms.CharField(
+        widget=forms.Textarea(attrs={'placeholder': "Write your comment here!",
+                                     'rows': 1},
+                              ),
+        label=False
+    )
+
 
 def show_notices(request):
+    form, form_comment = None,None
+
     if request.method == 'POST':
-        form = NoticeForm(request.POST)
 
         if request.POST.get('add_button'):
-            data = {}
+            form = NoticeForm(request.POST)
+            form_comment = CommentForm()
 
             if form.is_valid():
                 try:
@@ -96,11 +128,31 @@ def show_notices(request):
                 return HttpResponseRedirect(reverse('board'))
             else:
                 messages.info(request, 'Validation errors!')
-            return render(request, 'board.html', {'form': form, 'notices': Notice.objects.all()})
+            # return render(request, 'board.html', {'form': form, 'form_comment': form_comment, 'notices': Notice.objects.all()})
+
+        # if was pushed button 'Add comment'
+        elif request.POST.get('add_comment'):
+            form = NoticeForm()
+            form_comment = CommentForm(request.POST)
+
+            if form_comment.is_valid():
+                try:
+                    notice = form_comment.save(commit=False)
+                    notice.user = request.user
+                    notice.parent = Notice.objects.get(pk=request.POST.get('id-node'))
+                    notice.save()
+                except Exception as e:
+                    messages.error(request, 'Error during adding message!' + str(e))
+                else:
+                    messages.success(request, 'Comment was added successful!')
+                return HttpResponseRedirect(reverse('board'))
+            else:
+                messages.info(request, 'Validation errors!')
     else:
         form = NoticeForm()
+        form_comment = CommentForm()
 
-    return render(request, "board.html", {'form': form, 'notices': Notice.objects.all()})
+    return render(request, "board.html", {'form': form, 'form_comment': form_comment, 'notices': Notice.objects.all()})
 
 class NoticeList(ListView):
     model = Notice

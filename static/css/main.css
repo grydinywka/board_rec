@@ -16,3 +16,19 @@
     height: 40px;
     font-size: 16px;
 }
+
+#submit-id-add_comment {
+    margin-left: 10px;
+}
+
+.content {
+    /* background-color: #F5F5DC;*/
+}
+
+#sub-header {
+    margin: 20px;
+}
+
+#header {
+    margin-bottom: 20px;
+}

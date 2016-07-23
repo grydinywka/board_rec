@@ -25,11 +25,6 @@
 <ul class="list-group">
     {% recursetree notices %}
         <li class="list-group-item lead">
-            <!--<div>-->
-                {% if node.is_child_node %}
-                <p>Comments:</p>
-                {% endif %}
-            <!--</div>-->
             <span>
                 ({{ node.created|date:"Y-M-d H:i:s" }})
                 {{ node.user.get_full_name|default:node.user }}:
@@ -57,6 +52,7 @@
 
             {% if not node.is_leaf_node %}
             <ul class="children">
+                    <p>Comments:</p>
                     {{ children }}
             </ul>
             {% endif %}

@@ -1,5 +1,4 @@
 function correct_message() {
-    $('.content-correct').hide();
     $('.correct_msg').click(function() {
         var $list = $(this).parent().parent();
         var $msg = $list.find('p.content:first');
@@ -14,17 +13,9 @@ function correct_message() {
     });
 }
 
-function putPre() {
-    $('textarea').html('<pre></pre>');
-}
-
-
-$(document).ready(function() {
-    correct_message();
-    $(".comment").hide();
+function comment_message() {
     $(".addcomment").click(function() {
         var msg_id = $(this).attr('data-comment-id');
-//        var li = $(this).parent().parent();
 
         $('.content-correct').hide();
         $(".comment").hide();
@@ -32,7 +23,15 @@ $(document).ready(function() {
 //        $(this).next().next().show();
 
         $(("#comment_to").concat(msg_id)).toggle();
-
-//        li.toggleClass('active');
     });
+}
+
+function putPre() {
+    $('textarea').html('<pre></pre>');
+}
+
+
+$(document).ready(function() {
+    correct_message();
+    comment_message();
 });

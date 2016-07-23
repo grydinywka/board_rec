@@ -49,3 +49,11 @@
 .content-correct {
     margin-bottom: 50px
 }
+
+.content-correct, .comment {
+    display: none;
+}
+
+#buttons-comment-form {
+    padding-bottom:20px;
+}

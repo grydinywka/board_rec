@@ -14,7 +14,7 @@ function correct_message() {
     });
 }
 
-function putP() {
+function putPre() {
     $('textarea').html('<pre></pre>');
 }
 
@@ -28,6 +28,7 @@ $(document).ready(function() {
 
         $('.content-correct').hide();
         $(".comment").hide();
+        $('.content').show();
 //        $(this).next().next().show();
 
         $(("#comment_to").concat(msg_id)).toggle();

@@ -60,5 +60,9 @@
 
 .content {
     white-space: pre-wrap;
-    color: #5cb85c;
+    background-color: #eee;
+}
+
+#footer {
+    margin: 10px;
 }

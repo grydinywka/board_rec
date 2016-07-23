@@ -57,3 +57,7 @@
 #buttons-comment-form {
     padding-bottom:20px;
 }
+
+.content {
+    white-space: pre-wrap;
+}

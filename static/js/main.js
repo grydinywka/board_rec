@@ -26,11 +26,6 @@ function comment_message() {
     });
 }
 
-function putPre() {
-    $('textarea').html('<pre></pre>');
-}
-
-
 $(document).ready(function() {
     correct_message();
     comment_message();

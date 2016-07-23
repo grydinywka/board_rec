@@ -1,7 +1,11 @@
+dj-database-url==0.4.1
+dj-static==0.0.6
 Django==1.9.8
 django-crispy-forms==1.6.0
 django-mptt==0.8.4
 django-registration-redux==1.4
+django-toolbelt==0.0.1
+gunicorn==19.6.0
 oauthlib==1.1.2
 psycopg2==2.6.2
 PyJWT==1.4.1
@@ -11,3 +15,5 @@ pytz==2016.6.1
 requests==2.10.0
 requests-oauthlib==0.6.2
 six==1.10.0
+static3==0.7.0
+whitenoise==3.2

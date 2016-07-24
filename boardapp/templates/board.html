@@ -36,11 +36,11 @@
 
             {% if user.is_authenticated %}
                 <div id="buttons-comment-form">
-                    <button type="button" class="addcomment btn btn-warning btn-xs"
-                            data-comment-id="{{ node.id }}">Add
-                        comment</button>
+                    <button type="button" class="addcomment btn btn-link" data-comment-id="{{ node.id }}">
+                        Add comment
+                    </button>
                     {% if user == node.user %}/
-                    <button type="button" class="correct_msg btn btn-link" href="#">Correct</button>
+                    <button type="button" class="correct_msg btn btn-link" href="#">Correct message</button>
                         <!--{% if node.updated == node.created %}Updated {{ node.updated|date:"Y-M-d H:i:s" }}{% endif %}-->
                     {% endif %}
                     <div class="comment" id="comment_to{{ node.id }}">
@@ -52,8 +52,11 @@
 
             {% if not node.is_leaf_node %}
             <ul class="children">
-                    <p>Comments:</p>
-                    {{ children }}
+                <p>Comments:</p>
+                {{ children }}
+                <!--{% for n in node.get_leafnodes %}-->
+                    <!--<p>{{ n.content }}</p>-->
+                <!--{% endfor %}-->
             </ul>
             {% endif %}
         </li>

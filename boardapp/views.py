@@ -5,6 +5,8 @@ from django.views.generic import ListView
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.utils.functional import cached_property
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, Div, Fieldset, HTML, ButtonHolder, MultiField, Hidden
@@ -69,6 +71,7 @@ class NoticeForm(BaseNoticeForm):
         label=False
     )
 
+
 class CorrectNoticeForm(BaseNoticeForm):
     """class for correct message"""
     def __init__(self, *args, **kwargs):
@@ -79,7 +82,7 @@ class CorrectNoticeForm(BaseNoticeForm):
                     <input type="hidden" value="{{ node.id }}" name="id-node">
                 """)),
             'content',
-            FormActions(Submit('correct_message', 'Submit'),
+            FormActions(Submit('correct_message', 'Correct message'),
                         Submit('cancel_correct_message', 'Cancel', css_class="btn btn-danger"),
                        ),
 
@@ -106,7 +109,7 @@ class CommentForm(BaseNoticeForm):
             Div(HTML("""
                     <input type="hidden" value="{{ node.id }}" name="id-node">
                 """)),
-            FieldWithButtons('content', Submit('add_comment', 'Submit')),
+            FieldWithButtons('content', Submit('add_comment', 'Add comment')),
 
         )
 
@@ -122,11 +125,123 @@ class CommentForm(BaseNoticeForm):
     )
 
 
+class MpttPaginator(Paginator):
+    """
+        class fpr paginate mtpp tree
+    """
+
+    def __init__(self, object_list, per_page, orphans=0, allow_empty_first_page=True):
+        super(MpttPaginator, self).__init__(object_list, per_page, orphans=0, allow_empty_first_page=True)
+        # self.bottom = 0
+
+    @cached_property
+    def count(self):
+        """
+        Returns the total number of objects, across all pages.
+        """
+        # try:
+        #     return self.object_list.count()
+        # except (AttributeError, TypeError):
+        #     # AttributeError if object_list has no count() method.
+        #     # TypeError if object_list.count() requires arguments
+        #     # (i.e. is of type list).
+        #     return len(self.object_list)
+        value_roots = 0
+        for node in self.object_list:
+            if node.is_root_node():
+                value_roots += 1
+        return value_roots
+
+    def page(self, number):
+        """
+        Returns a Page object for the given 1-based page number.
+        """
+        number = self.validate_number(number)
+        bottom = self.mptt_bottom(number)
+
+        # top = bottom + self.per_page
+        top = self.mptt_top(number)
+        if top + self.orphans >= self.count:
+            top = self.count
+        return self._get_page(self.object_list[bottom:top], number, self)
+
+    def mptt_bottom(self, number):
+        num_root = (number - 1) * self.per_page
+        # if len(Notice.objects.root_nodes()) > num_root:
+        #     id_root = Notice.objects.root_nodes()[num_root].pk
+        # else:
+        #     raise EmptyPage()
+        id_root = Notice.objects.root_nodes()[num_root].pk
+        all_messages = Notice.objects.all()
+        i = 0
+        while all_messages[i].id != id_root:
+            i += 1
+
+        return i
+
+    def mptt_top(self, number_page):
+        # root = -1
+        # i = bottom
+        # while root < self.per_page:
+        #     if self.object_list[i].is_root_node():
+        #         root += 1
+        #     i += 1
+        # i -= 1
+        all_messages = Notice.objects.all()
+        i = 0
+        num_root = (number_page - 1) * self.per_page + self.per_page
+        if len(Notice.objects.root_nodes()) > num_root + 1:
+            id_root = Notice.objects.root_nodes()[num_root+1].pk
+            while all_messages[i].id != id_root:
+                i += 1
+            i -= 1
+        else:
+            i = len(Notice.objects.root_nodes()) - 1
+
+        return i
+
+
+def paginator(objects, size, request, context, var_name='objects_list'):
+    """
+        Paginate objects provided by view.
+
+        THis function takes:
+            * list of elements;
+            * number of objects per page;
+            * request object to get url paramerers from;
+            * context to set new variables into;
+            * var_name = variable name for list of objects.
+
+        It returns updated context object.
+    """
+
+    # apply pagination
+    paginator = Paginator(objects, size)
+
+    # try to get page number fron request
+    page = request.GET.get('page', '1')
+    try:
+        object_list = paginator.page(page)
+    except PageNotAnInteger:
+        # if page is not an integer, deliver first page
+        object_list = paginator.page(1)
+    except EmptyPage:
+        # if page is out of range (e.g. 9999), deliver last page of results
+        object_list = paginator.page(paginator.num_pages)
+
+    # set variable into context
+    context[var_name] = object_list
+    context['num_pages'] = paginator.num_pages
+
+    return context
+
+
 def show_notices(request):
     form, form_comment, form_correct = None, None, None
 
     if request.method == 'POST':
-        # if we pushed 'Add button' ( added new message )
+
+        # if we pushed 'Add message' ( added new message )
         if request.POST.get('add_button'):
             form = NoticeForm(request.POST)
             form_comment = CommentForm()
@@ -145,7 +260,7 @@ def show_notices(request):
             else:
                 messages.info(request, 'Validation errors!')
 
-        # if was pushed button 'Add comment'
+        # if was pushed 'Add comment' button
         elif request.POST.get('add_comment'):
             form = NoticeForm()
             form_comment = CommentForm(request.POST)
@@ -164,6 +279,8 @@ def show_notices(request):
                 return HttpResponseRedirect(reverse('board'))
             else:
                 messages.info(request, 'Validation errors!')
+
+        # if we pushed 'Correct message' button
         elif request.POST.get('correct_message'):
             form = NoticeForm()
             form_comment = CommentForm()
@@ -181,6 +298,8 @@ def show_notices(request):
                 return HttpResponseRedirect(reverse('board'))
             else:
                 messages.info(request, 'Validation errors!')
+
+        # if we pushed 'Cancel' button
         elif request.POST.get('cancel_correct_message'):
             messages.info(request, 'Canceled correct message!')
             return HttpResponseRedirect(reverse('board'))
@@ -189,10 +308,20 @@ def show_notices(request):
         form_comment = CommentForm()
         form_correct = CorrectNoticeForm()
 
-    return render(request, "board.html", {'form': form,
-                                          'form_comment': form_comment,
-                                          'form_correct': form_correct,
-                                          'notices': Notice.objects.all()})
+    context = {
+        'form': form,
+        'form_comment': form_comment,
+        'form_correct': form_correct,
+        # 'notices': Notice.objects.all()[12:22]
+        # 'notices': Notice.objects.all()[:12]
+        }
+
+    paginate_by = 10
+    context = paginator(Notice.objects.root_nodes(), paginate_by, request, context,
+        var_name='notices')
+
+    return render(request, "board.html", context)
+
 
 class NoticeList(ListView):
     model = Notice

@@ -27,23 +27,81 @@ function comment_message() {
 }
 
 function infinityScroll() {
-	var win = $(window);
 	var sign_end = false;
 	var $l_m = $('#load_more');
+	var win = $(window);
+	var ajax_call_running = false;
+	var num_page = parseInt($l_m.data('num-pages'), 10);
+    var page_number = parseInt($l_m.data('page'), 10);
+    var url_to_go;
+
+	// Each time the user scrolls
+//	win.scroll(function() {
+//		// End of the document reached?
+//		if ($(document).height() - win.height() == win.scrollTop()) {
+//            if ( ajax_call_running ) {
+//                return;
+//            }
+//
+//            ajax_call_running = true;
+//
+//			if ( sign_end == false ) {
+//				page_number += 1;
+//				url_to_go = ("/board/?page=").concat(page_number);
+//
+//
+//				$.ajax({
+//					url: url_to_go,
+//					dataType: 'html',
+//					beforeSend: function() {
+//					    $('#loading').show();
+//					},
+//					success: function(html) {
+//						var html = $(html);
+//						var rows = html.find('#notice_list').children();
+//
+//						$l_m.data("page", page_number);
+//						$('#notice_list').append(rows);
+//						$('#loading').hide();
+//						if ( page_number >= num_page ) {
+//							sign_end = true;
+//						}
+//						correct_message();
+//						comment_message();
+//						alert(url_to_go);
+//
+//						ajax_call_running = false;
+//					},
+//					error: function() {
+//					    alert('Error durin scrolling ...');
+//					    ajax_call_running = false;
+//					    $('#loading').hide();
+//					}
+//				});
+//			};
+//		}
+//	});
 
 	$(window).endlessScroll({
 		inflowPixels: 300,
 		callback: function() {
+			if ( ajax_call_running ) {
+                return;
+            }
+
+            ajax_call_running = true;
+
 			// if it is not all objects
 			if ( sign_end == false ) {
-				var num_page = parseInt($l_m.data('num-pages'), 10);
-				var page_number = parseInt($l_m.data('page'), 10) + 1;
-				var url_to_go = ("/board/?page=").concat(page_number);
-				$('#loading').show();
+				page_number += 1;
+				url_to_go = ("/board/?page=").concat(page_number);
 
 				$.ajax({
 					url: url_to_go,
 					dataType: 'html',
+					beforeSend: function() {
+					    $('#loading').show();
+					},
 					success: function(html) {
 						var html = $(html);
 						var rows = html.find('#notice_list').children();
@@ -56,6 +114,14 @@ function infinityScroll() {
 						}
 						correct_message();
 						comment_message();
+						alert(url_to_go);
+
+						ajax_call_running = false;
+					},
+					error: function() {
+					    alert('Error durin scrolling ...');
+					    ajax_call_running = false;
+					    $('#loading').hide();
 					}
 				});
 			}

@@ -28,6 +28,7 @@
     {% recursetree notices %}
         <li class="list-group-item lead">
             <span>
+                <!--msg # {{ node.id }}-->
                 ({{ node.created|date:"Y-M-d H:i:s" }})
                 {{ node.user.get_full_name|default:node.user }}:
             </span>

@@ -14,9 +14,9 @@ $ sudo python get-pip.py
 
 $ sudo pip install virtualenv
 
-$ virtualenv caecar --no-site-packages
+$ virtualenv board --no-site-packages
 
-$ cd caesar
+$ cd board
 
 $ source bin/activate
 

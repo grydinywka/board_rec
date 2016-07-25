@@ -66,7 +66,6 @@ function infinityScroll() {
 						}
 						correct_message();
 						comment_message();
-						alert(url_to_go);
 
 						ajax_call_running = false;
 					},

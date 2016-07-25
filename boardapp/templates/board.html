@@ -29,7 +29,7 @@
         <li class="list-group-item lead">
             <span>
                 ({{ node.created|date:"Y-M-d H:i:s" }})
-                {{ node.user.get_full_name|default:node.user }}, node #{{ node.id }}:
+                {{ node.user.get_full_name|default:node.user }}:
             </span>
             <p class="content">{{ node.content }}</p>
             <div class="content-correct">

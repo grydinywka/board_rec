@@ -141,7 +141,8 @@ def paginator(objects, size, request, context, var_name='objects_list'):
             * context to set new variables into;
             * var_name = variable name for list of objects.
 
-        It returns updated context object.
+        It returns updated context object. It returns objects grouped by root instances that include their
+        comment-messages. As result on page we can see more messages than size. Besause instance can have comments!
     """
 
     # apply pagination
@@ -179,6 +180,7 @@ def paginator(objects, size, request, context, var_name='objects_list'):
 
     # set variable into context
     context[var_name] = custom_obj_list
+    context['num_current'] = object_list.number
     context['num_pages'] = paginator.num_pages
 
     return context
@@ -262,7 +264,7 @@ def show_notices(request):
         'form_correct': form_correct,
         }
 
-    paginate_by = 10
+    paginate_by = 5
     context = paginator(Notice.objects.root_nodes(), paginate_by, request, context,
         var_name='notices')
 

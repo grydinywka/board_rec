@@ -66,3 +66,7 @@
 #footer {
     margin: 10px;
 }
+
+#loading {
+    display: none;
+}

@@ -7,22 +7,24 @@
 
 {% block content %}
 
+<input type="hidden" data-num-pages="{{ num_pages }}" data-page="{{ num_current }}" id = "load_more">
+
 <div class="text-center" id="sub-header">
 {% if user.is_authenticated %}
     {% crispy form %}
 {% else %}
 
-        {% url 'board' as board_url  %}
-        <span class="lead">For adding messages or comments, please:
-            <a href="{% url 'index' %}">
-                Log In!
-            </a>
-        </span>
+    {% url 'board' as board_url  %}
+    <span class="lead">For adding messages or comments, please:
+        <a href="{% url 'index' %}">
+            Log In!
+        </a>
+    </span>
 
 {% endif %}
 </div>
 
-<ul class="list-group">
+<ul class="list-group" id="notice_list">
     {% recursetree notices %}
         <li class="list-group-item lead">
             <span>
@@ -54,13 +56,15 @@
             <ul class="children">
                 <p>Comments:</p>
                 {{ children }}
-                <!--{% for n in node.get_leafnodes %}-->
-                    <!--<p>{{ n.content }}</p>-->
-                <!--{% endfor %}-->
             </ul>
             {% endif %}
         </li>
     {% endrecursetree %}
 </ul>
+
+<p class="text-center lead" id="loading">
+    loading ...
+	<img src="{% static 'img/ajax-loader.gif' %}" alt="Loading…" />
+</p>
 
 {% endblock content %}

@@ -54,11 +54,15 @@ function infinityScroll() {
 						if ( page_number >= num_page ) {
 							sign_end = true;
 						}
+						correct_message();
+						comment_message();
 					}
 				});
 			}
 		}
 	});
+
+
 }
 
 $(document).ready(function() {

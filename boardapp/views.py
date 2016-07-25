@@ -125,81 +125,10 @@ class CommentForm(BaseNoticeForm):
     )
 
 
-class MpttPaginator(Paginator):
-    """
-        class fpr paginate mtpp tree
-    """
-
-    def __init__(self, object_list, per_page, orphans=0, allow_empty_first_page=True):
-        super(MpttPaginator, self).__init__(object_list, per_page, orphans=0, allow_empty_first_page=True)
-        # self.bottom = 0
-
-    @cached_property
-    def count(self):
-        """
-        Returns the total number of objects, across all pages.
-        """
-        # try:
-        #     return self.object_list.count()
-        # except (AttributeError, TypeError):
-        #     # AttributeError if object_list has no count() method.
-        #     # TypeError if object_list.count() requires arguments
-        #     # (i.e. is of type list).
-        #     return len(self.object_list)
-        value_roots = 0
-        for node in self.object_list:
-            if node.is_root_node():
-                value_roots += 1
-        return value_roots
-
-    def page(self, number):
-        """
-        Returns a Page object for the given 1-based page number.
-        """
-        number = self.validate_number(number)
-        bottom = self.mptt_bottom(number)
-
-        # top = bottom + self.per_page
-        top = self.mptt_top(number)
-        if top + self.orphans >= self.count:
-            top = self.count
-        return self._get_page(self.object_list[bottom:top], number, self)
-
-    def mptt_bottom(self, number):
-        num_root = (number - 1) * self.per_page
-        # if len(Notice.objects.root_nodes()) > num_root:
-        #     id_root = Notice.objects.root_nodes()[num_root].pk
-        # else:
-        #     raise EmptyPage()
-        id_root = Notice.objects.root_nodes()[num_root].pk
-        all_messages = Notice.objects.all()
-        i = 0
-        while all_messages[i].id != id_root:
-            i += 1
-
-        return i
-
-    def mptt_top(self, number_page):
-        # root = -1
-        # i = bottom
-        # while root < self.per_page:
-        #     if self.object_list[i].is_root_node():
-        #         root += 1
-        #     i += 1
-        # i -= 1
-        all_messages = Notice.objects.all()
-        i = 0
-        num_root = (number_page - 1) * self.per_page + self.per_page
-        if len(Notice.objects.root_nodes()) > num_root + 1:
-            id_root = Notice.objects.root_nodes()[num_root+1].pk
-            while all_messages[i].id != id_root:
-                i += 1
-            i -= 1
-        else:
-            i = len(Notice.objects.root_nodes()) - 1
-
-        return i
-
+def index_in_general_qs(qs, index, root_id):
+    while qs[index].id != root_id:
+            index += 1
+    return index
 
 def paginator(objects, size, request, context, var_name='objects_list'):
     """
@@ -229,8 +158,27 @@ def paginator(objects, size, request, context, var_name='objects_list'):
         # if page is out of range (e.g. 9999), deliver last page of results
         object_list = paginator.page(paginator.num_pages)
 
+
+    bottom_root_id = object_list[0].id
+
+    all_messages = Notice.objects.all()
+    # i, j - indexes in general queryset Notice.objects.all()
+
+
+    i = index_in_general_qs(all_messages,0,bottom_root_id)
+
+    j = i
+    if object_list.has_next():
+        next_object_list = paginator.page(object_list.next_page_number())
+        top_root_id = next_object_list[0].id
+        j = index_in_general_qs(all_messages,j,top_root_id)
+    else:
+        j = len(all_messages)
+    custom_obj_list = all_messages[i:j]
+
+
     # set variable into context
-    context[var_name] = object_list
+    context[var_name] = custom_obj_list
     context['num_pages'] = paginator.num_pages
 
     return context
@@ -312,8 +260,6 @@ def show_notices(request):
         'form': form,
         'form_comment': form_comment,
         'form_correct': form_correct,
-        # 'notices': Notice.objects.all()[12:22]
-        # 'notices': Notice.objects.all()[:12]
         }
 
     paginate_by = 10

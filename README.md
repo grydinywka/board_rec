@@ -33,7 +33,6 @@ $ source bin/activate
 (caesar)$ pip install -r requirements.txt
 
 Next stage, we should create database. Open postgresql(if need - install one ):
-(caesar)$ psql
 
 =# create database board_rec_db;
 
@@ -48,6 +47,7 @@ Next stage, we should create database. Open postgresql(if need - install one ):
 add to end file next two lines:
 
 DJANGO_SETTINGS_MODULE="board.development_settings"
+
 export DJANGO_SETTINGS_MODULE
 
 Save file
